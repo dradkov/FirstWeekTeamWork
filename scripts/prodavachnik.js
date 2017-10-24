@@ -283,12 +283,13 @@ function startApp() {
 
         const kinveyUserUrl =
             `${kinveyBaseUrl}user/${kinveyAppKey}/${sessionStorage.getItem('userId')}`;
-
+			
         $.ajax({
             method: "GET",
             url: kinveyUserUrl,
             headers: kinveyAuthHeaders,
-            success: afterPublisherRequest
+            success: afterPublisherRequest,
+            error: showError
         });
 
         function afterPublisherRequest(publisher) {
@@ -300,16 +301,18 @@ function startApp() {
             };
 
             const kinveyAdvertsUrl = kinveyBaseUrl + "appdata/" + kinveyAppKey + "/adverts";
-            $.ajax({
+           $.ajax({
                 method: "POST",
                 url: kinveyAdvertsUrl,
                 headers: kinveyAuthHeaders,
                 data: advertData,
-                success: createAdvertSuccess
+                success: createAdvertSuccess,
+                error: handleAjaxError
             });
 
             function createAdvertSuccess(response) {
                 listAdverts();
+				 showInfo('Advertisement created.');
             }
         }
     }
@@ -321,18 +324,20 @@ function startApp() {
         const kinveyAuthHeaders = {
             'Authorization': "Kinvey " + sessionStorage.getItem('authToken'),
         };
-
-        $.ajax({
+                $.ajax({
             method: "DELETE",
             url: kinveyBookUrl,
             headers: kinveyAuthHeaders,
-            success: deleteBookSuccess
+            success: deleteBookSuccess,
+            error: handleAjaxError
         });
 
         function deleteBookSuccess(response) {
             listAdverts();
+            showInfo('Advert deleted.');
         }
     }
+
 
     // advertisement/edit GET
     function loadAdvertForEdit(advertId) {
@@ -342,11 +347,13 @@ function startApp() {
             'Authorization': "Kinvey " + sessionStorage.getItem('authToken'),
         };
 
+      
         $.ajax({
             method: "GET",
             url: kinveyBookUrl,
             headers: kinveyAuthHeaders,
-            success: loadAdvertForEditSuccess
+            success: loadAdvertForEditSuccess,
+            error: handleAjaxError
         });
 
         function loadAdvertForEditSuccess(advert) {
@@ -379,12 +386,15 @@ function startApp() {
             url: kinveyAdvertUrl,
             headers: kinveyAuthHeaders,
             data: advertData,
-            success: editAdvertSuccess
+            success: editAdvertSuccess,
+            error: handleAjaxError
         });
 
         function editAdvertSuccess(response) {
             listAdverts();
+            showInfo('Advertisement edited.');
         }
     }
 }
+
 
